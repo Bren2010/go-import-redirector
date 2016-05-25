@@ -74,6 +74,7 @@ var (
 	addr       = flag.String("addr", ":http", "serve http on `address`")
 	serveTLS   = flag.Bool("tls", false, "serve https on :443")
 	vcs        = flag.String("vcs", "git", "set version control `system`")
+	godoc      = flag.String("godoc", "https://godoc.org/", "godocs server")
 	importPath string
 	repoPath   string
 	wildcards  int
@@ -128,15 +129,16 @@ var tmpl = template.Must(template.New("main").Parse(`<!DOCTYPE html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 <meta name="go-import" content="{{.ImportRoot}} {{.VCS}} {{.VCSRoot}}">
-<meta http-equiv="refresh" content="0; url=https://godoc.org/{{.ImportRoot}}{{.Suffix}}">
+<meta http-equiv="refresh" content="0; url={{.GoDoc}}{{.ImportRoot}}{{.Suffix}}">
 </head>
 <body>
-Nothing to see here; <a href="https://godoc.org/{{.ImportRoot}}{{.Suffix}}">move along</a>.
+Nothing to see here; <a href="{{.GoDoc}}{{.ImportRoot}}{{.Suffix}}">move along</a>.
 </body>
 </html>
 `))
 
 type data struct {
+	GoDoc      string
 	ImportRoot string
 	VCS        string
 	VCSRoot    string
@@ -148,7 +150,7 @@ func redirect(w http.ResponseWriter, req *http.Request) {
 	var importRoot, repoRoot, suffix string
 	if wildcards > 0 {
 		if path == importPath {
-			http.Redirect(w, req, "https://godoc.org/"+importPath, 302)
+			http.Redirect(w, req, fmt.Sprintf("%v%v", *godoc, importPath), 302)
 			return
 		}
 		if !strings.HasPrefix(path, importPath+"/") {
@@ -172,6 +174,7 @@ func redirect(w http.ResponseWriter, req *http.Request) {
 		suffix = path[len(importPath):]
 	}
 	d := &data{
+		GoDoc:      *godoc,
 		ImportRoot: importRoot,
 		VCS:        *vcs,
 		VCSRoot:    repoRoot,
