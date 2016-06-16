@@ -160,7 +160,7 @@ func redirect(w http.ResponseWriter, req *http.Request) {
 		elem := path[len(importPath)+1:]
 		if parts := strings.Split(elem, "/"); len(parts) >= wildcards {
 			elem = strings.Join(parts[:wildcards], "/")
-			suffix = strings.Join(parts[wildcards:], "/")
+			suffix = "/" + strings.Join(parts[wildcards:], "/")
 		}
 		importRoot = importPath + "/" + elem
 		repoRoot = repoPath + "/" + elem
