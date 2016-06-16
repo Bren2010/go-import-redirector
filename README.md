@@ -1,2 +1,2 @@
-go get [-u] rsc.io/go-import-redirector
-https://godoc.org/rsc.io/go-import-redirector
+go get [-u] github.com/cloudflare/go-import-redirector
+https://godoc.org/github.com/cloudflare/go-import-redirector
